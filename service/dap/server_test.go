@@ -476,6 +476,9 @@ func TestAttachStopOnEntry(t *testing.T) {
 	if runtime.GOOS == "freebsd" {
 		t.SkipNow()
 	}
+	if runtime.GOOS == "openbsd" {
+		t.Skipf("needs executable path")
+	}
 	runTest(t, "loopprog", func(client *daptest.Client, fixture protest.Fixture) {
 		// Start the program to attach to
 		cmd := exec.Command(fixture.Path)
@@ -3635,6 +3638,9 @@ func TestAttachSubstitutePath(t *testing.T) {
 	if runtime.GOOS == "freebsd" {
 		t.SkipNow()
 	}
+	if runtime.GOOS == "openbsd" {
+		t.Skipf("needs executable path")
+	}
 	if runtime.GOOS == "windows" {
 		t.Skip("test skipped on windows, see https://delve.beta.teamcity.com/project/Delve_windows for details")
 	}
@@ -5652,6 +5658,9 @@ func TestLaunchRequestWithEnv(t *testing.T) {
 func TestAttachRequest(t *testing.T) {
 	if runtime.GOOS == "freebsd" {
 		t.SkipNow()
+	}
+	if runtime.GOOS == "openbsd" {
+		t.Skipf("needs executable path")
 	}
 	if runtime.GOOS == "windows" {
 		t.Skip("test skipped on windows, see https://delve.beta.teamcity.com/project/Delve_windows for details")

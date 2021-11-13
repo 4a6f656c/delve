@@ -667,7 +667,7 @@ func loadBinaryInfo(bi *BinaryInfo, image *Image, path string, entryPoint uint64
 	defer wg.Wait()
 
 	switch bi.GOOS {
-	case "linux", "freebsd":
+	case "linux", "freebsd", "openbsd":
 		return loadBinaryInfoElf(bi, image, path, entryPoint, &wg)
 	case "windows":
 		return loadBinaryInfoPE(bi, image, path, entryPoint, &wg)
@@ -1263,6 +1263,8 @@ func loadBinaryInfoElf(bi *BinaryInfo, image *Image, path string, addr uint64, w
 	if err != nil {
 		return err
 	}
+
+	// XXX
 	if !supportedLinuxArch[elfFile.Machine] {
 		return &ErrUnsupportedArch{os: "linux", cpuArch: elfFile.Machine}
 	}

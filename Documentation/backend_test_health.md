@@ -18,6 +18,9 @@ Tests skipped by each supported backend:
 	* 1 broken
 * linux/arm64 skipped = 1
 	* 1 broken - cgo stacktraces
+* openbsd skipped = 16
+	* 12 broken
+	* 4 not implemented
 * pie skipped = 2
 	* 2 upstream issue - https://github.com/golang/go/issues/29322
 * windows skipped = 5

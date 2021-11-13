@@ -72,6 +72,7 @@ func platformCases() []tCase {
 	if runtime.GOOS == "freebsd" {
 		return append(casesUnix, casesFreebsd...)
 	}
+	// XXX
 	return casesUnix
 }
 

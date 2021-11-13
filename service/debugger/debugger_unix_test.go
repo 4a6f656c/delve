@@ -30,6 +30,7 @@ func TestDebugger_LaunchNoExecutablePerm(t *testing.T) {
 		"darwin":  "linux",
 		"windows": "linux",
 		"freebsd": "windows",
+		"openbsd": "windows",
 		"linux":   "windows",
 	}
 	if runtime.GOARCH == "arm64" && runtime.GOOS == "linux" {
@@ -87,12 +88,17 @@ func TestDebugger_LaunchWithTTY(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("lsof", "-p", fmt.Sprintf("%d", d.ProcessPid()))
+	openFileCmd, wantTTYName := "lsof", tty.Name()
+	if runtime.GOOS == "openbsd" {
+		openFileCmd = "fstat"
+		wantTTYName = filepath.Base(tty.Name())
+	}
+	cmd := exec.Command(openFileCmd, "-p", fmt.Sprintf("%d", d.ProcessPid()))
 	result, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Contains(result, []byte(tty.Name())) {
-		t.Fatal("process open file list does not contain expected tty")
+	if !bytes.Contains(result, []byte(wantTTYName)) {
+		t.Fatalf("process open file list does not contain expected tty %s", wantTTYName)
 	}
 }

@@ -457,7 +457,7 @@ func TestScopePrefix(t *testing.T) {
 
 func TestOnPrefix(t *testing.T) {
 	if runtime.GOOS == "freebsd" {
-		t.Skip("test is not valid on FreeBSD")
+		t.Skipf("test is not valid on %s", runtime.GOOS)
 	}
 	const prefix = "\ti: "
 	test.AllowRecording(t)
@@ -521,7 +521,7 @@ func TestNoVars(t *testing.T) {
 
 func TestOnPrefixLocals(t *testing.T) {
 	if runtime.GOOS == "freebsd" {
-		t.Skip("test is not valid on FreeBSD")
+		t.Skipf("test is not valid on %s", runtime.GOOS)
 	}
 	const prefix = "\ti: "
 	test.AllowRecording(t)

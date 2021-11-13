@@ -1020,6 +1020,9 @@ func TestTracePid(t *testing.T) {
 			return
 		}
 	}
+	if runtime.GOOS == "openbsd" {
+		t.Skip("needs path to executable and kern.global_ptrace=1")
+	}
 
 	dlvbin, tmpdir := getDlvBin(t)
 	defer os.RemoveAll(tmpdir)

@@ -47,6 +47,7 @@ func TestDebugger_LaunchInvalidFormat(t *testing.T) {
 		"darwin":  "linux",
 		"windows": "linux",
 		"freebsd": "windows",
+		"openbsd": "windows",
 		"linux":   "windows",
 	}
 	if runtime.GOARCH == "arm64" && runtime.GOOS == "linux" {

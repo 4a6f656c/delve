@@ -251,7 +251,7 @@ func (dbp *nativeProcess) initialize(path string, debugInfoDirs []string) (*proc
 		//    look like the breakpoint was hit twice when it was "logically" only
 		//    executed once.
 		//    See: https://go-review.googlesource.com/c/go/+/208126
-		DisableAsyncPreempt: runtime.GOOS == "windows" || runtime.GOOS == "freebsd" || (runtime.GOOS == "linux" && runtime.GOARCH == "arm64"),
+		DisableAsyncPreempt: runtime.GOOS == "windows" || runtime.GOOS == "freebsd" || (runtime.GOOS == "linux" && runtime.GOARCH == "arm64") || runtime.GOOS == "openbsd",
 
 		StopReason: stopReason,
 		CanDump:    runtime.GOOS == "linux" || runtime.GOOS == "windows",
@@ -270,6 +270,7 @@ func (dbp *nativeProcess) handlePtraceFuncs() {
 	// while invoking the ptrace(2) syscall. This is due to the fact that ptrace(2) expects
 	// all commands after PTRACE_ATTACH to come from the same thread.
 	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 
 	for fn := range dbp.ptraceChan {
 		fn()

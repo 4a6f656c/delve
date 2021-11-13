@@ -585,6 +585,7 @@ func TestNextGeneral(t *testing.T) {
 
 func TestNextConcurrent(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	testcases := []nextTest{
 		{8, 9},
 		{9, 10},
@@ -621,6 +622,7 @@ func TestNextConcurrent(t *testing.T) {
 
 func TestNextConcurrentVariant2(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	// Just like TestNextConcurrent but instead of removing the initial breakpoint we check that when it happens is for other goroutines
 	testcases := []nextTest{
 		{8, 9},
@@ -702,6 +704,8 @@ func TestNextFunctionReturnDefer(t *testing.T) {
 }
 
 func TestNextNetHTTP(t *testing.T) {
+	t.Skip()
+
 	testcases := []nextTest{
 		{11, 12},
 		{12, 13},
@@ -1458,6 +1462,7 @@ func TestIssue325(t *testing.T) {
 
 func TestBreakpointCounts(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.AllowRecording(t)
 	withTestProcess("bpcountstest", t, func(p *proc.Target, fixture protest.Fixture) {
 		bp := setFileBreakpoint(p, t, fixture.Source, 12)
@@ -1490,6 +1495,7 @@ func TestBreakpointCounts(t *testing.T) {
 
 func TestHardcodedBreakpointCounts(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	withTestProcess("hcbpcountstest", t, func(p *proc.Target, fixture protest.Fixture) {
 		counts := map[int]int{}
 		for {
@@ -1702,6 +1708,7 @@ func BenchmarkLocalVariables(b *testing.B) {
 
 func TestCondBreakpoint(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.AllowRecording(t)
 	withTestProcess("parallel_next", t, func(p *proc.Target, fixture protest.Fixture) {
 		bp := setFileBreakpoint(p, t, fixture.Source, 9)
@@ -2086,6 +2093,7 @@ func TestIssue462(t *testing.T) {
 
 func TestNextParked(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.AllowRecording(t)
 	withTestProcess("parallel_next", t, func(p *proc.Target, fixture protest.Fixture) {
 		bp := setFunctionBreakpoint(p, t, "main.sayhi")
@@ -2137,6 +2145,7 @@ func TestNextParked(t *testing.T) {
 
 func TestStepParked(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.AllowRecording(t)
 	withTestProcess("parallel_next", t, func(p *proc.Target, fixture protest.Fixture) {
 		bp := setFunctionBreakpoint(p, t, "main.sayhi")
@@ -2438,7 +2447,7 @@ func TestIssue561(t *testing.T) {
 	})
 }
 
-func TestGoroutineLables(t *testing.T) {
+func TestGoroutineLabels(t *testing.T) {
 	withTestProcess("goroutineLabels", t, func(p *proc.Target, fixture protest.Fixture) {
 		assertNoError(p.Continue(), t, "Continue()")
 		g, err := proc.GetG(p.CurrentThread())
@@ -2466,6 +2475,7 @@ func TestStepOut(t *testing.T) {
 
 func TestStepConcurrentDirect(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.AllowRecording(t)
 	withTestProcess("teststepconcurrent", t, func(p *proc.Target, fixture protest.Fixture) {
 		bp := setFileBreakpoint(p, t, fixture.Source, 37)
@@ -2530,6 +2540,7 @@ func TestStepConcurrentDirect(t *testing.T) {
 
 func TestStepConcurrentPtr(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.AllowRecording(t)
 	withTestProcess("teststepconcurrent", t, func(p *proc.Target, fixture protest.Fixture) {
 		setFileBreakpoint(p, t, fixture.Source, 24)
@@ -2730,6 +2741,7 @@ func TestStepOnCallPtrInstr(t *testing.T) {
 
 func TestIssue594(t *testing.T) {
 	skipOn(t, "upstream issue", "darwin", "lldb")
+	skipOn(t, "broken", "openbsd")
 	// debugserver will receive an EXC_BAD_ACCESS for this, at that point
 	// there is no way to reconvert this exception into a unix signal and send
 	// it to the process.
@@ -2901,6 +2913,9 @@ func TestAttachDetach(t *testing.T) {
 			t.Logf("can not run TestAttachDetach: %v\n", bs)
 			return
 		}
+	}
+	if runtime.GOOS == "openbsd" {
+		t.Skip("needs executable path and kern.global_ptrace=1")
 	}
 	if testBackend == "rr" {
 		return
@@ -3194,6 +3209,8 @@ func TestShadowedFlag(t *testing.T) {
 }
 
 func TestAttachStripped(t *testing.T) {
+	t.Skip()
+
 	if testBackend == "lldb" && runtime.GOOS == "linux" {
 		bs, _ := ioutil.ReadFile("/proc/sys/kernel/yama/ptrace_scope")
 		if bs == nil || strings.TrimSpace(string(bs)) != "0" {
@@ -4090,6 +4107,8 @@ func TestIssue951(t *testing.T) {
 }
 
 func TestDWZCompression(t *testing.T) {
+	t.Skip()
+
 	// If dwz is not available in the system, skip this test
 	if _, err := exec.LookPath("dwz"); err != nil {
 		t.Skip("dwz not installed")
@@ -4575,6 +4594,7 @@ func testCallConcurrentCheckReturns(p *proc.Target, t *testing.T, gid1, gid2 int
 
 func TestCallConcurrent(t *testing.T) {
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	protest.MustSupportFunctionCalls(t, testBackend)
 	withTestProcess("teststepconcurrent", t, func(p *proc.Target, fixture protest.Fixture) {
 		bp := setFileBreakpoint(p, t, fixture.Source, 24)
@@ -5091,6 +5111,7 @@ func TestRequestManualStopWhileStopped(t *testing.T) {
 func TestStepOutPreservesGoroutine(t *testing.T) {
 	// Checks that StepOut preserves the currently selected goroutine.
 	skipOn(t, "broken", "freebsd")
+	skipOn(t, "broken", "openbsd")
 	rand.Seed(time.Now().Unix())
 	withTestProcess("issue2113", t, func(p *proc.Target, fixture protest.Fixture) {
 		assertNoError(p.Continue(), t, "Continue()")
@@ -5193,7 +5214,7 @@ func TestIssue2319(t *testing.T) {
 }
 
 func TestDump(t *testing.T) {
-	if runtime.GOOS == "freebsd" || (runtime.GOOS == "darwin" && testBackend == "native") {
+	if runtime.GOOS == "freebsd" || runtime.GOOS == "openbsd" || (runtime.GOOS == "darwin" && testBackend == "native") {
 		t.Skip("not supported")
 	}
 
@@ -5357,6 +5378,7 @@ func TestCompositeMemoryWrite(t *testing.T) {
 		t.Skip("only valid on amd64")
 	}
 	skipOn(t, "not implemented", "freebsd")
+	skipOn(t, "not implemented", "openbsd")
 	withTestProcess("fputest/", t, func(p *proc.Target, fixture protest.Fixture) {
 		getregs := func() (pc, rax, xmm1 uint64) {
 			regs, err := p.CurrentThread().Registers()
@@ -5444,6 +5466,7 @@ func TestVariablesWithExternalLinking(t *testing.T) {
 
 func TestWatchpointsBasic(t *testing.T) {
 	skipOn(t, "not implemented", "freebsd")
+	skipOn(t, "not implemented", "openbsd")
 	skipOn(t, "not implemented", "386")
 	skipOn(t, "see https://github.com/go-delve/delve/issues/2768", "windows")
 	protest.AllowRecording(t)
@@ -5503,6 +5526,7 @@ func TestWatchpointsBasic(t *testing.T) {
 
 func TestWatchpointCounts(t *testing.T) {
 	skipOn(t, "not implemented", "freebsd")
+	skipOn(t, "not implemented", "openbsd")
 	skipOn(t, "not implemented", "386")
 	skipOn(t, "see https://github.com/go-delve/delve/issues/2768", "windows")
 	protest.AllowRecording(t)
@@ -5618,6 +5642,7 @@ func TestDwrapStartLocation(t *testing.T) {
 
 func TestWatchpointStack(t *testing.T) {
 	skipOn(t, "not implemented", "freebsd")
+	skipOn(t, "not implemented", "openbsd")
 	skipOn(t, "not implemented", "386")
 	skipOn(t, "see https://github.com/go-delve/delve/issues/2768", "windows")
 	protest.AllowRecording(t)
@@ -5804,6 +5829,8 @@ func TestSetYMMRegister(t *testing.T) {
 }
 
 func TestNilPtrDerefInBreakInstr(t *testing.T) {
+	t.Skip()
+
 	// Checks that having a breakpoint on the exact instruction that causes a
 	// nil pointer dereference does not cause problems.
 
