@@ -1,5 +1,5 @@
-//+build linux darwin dragonfly freebsd netbsd openbsd solaris
-//+build amd64 arm64,!darwin mips64x ppc64x
+//+build linux darwin dragonfly freebsd netbsd solaris
+//+build amd64 arm64,!darwin mips64x ppc64x loong64
 
 package starlark
 
@@ -17,14 +17,24 @@ package starlark
 // TODO(golang.org/issue/38485): darwin,arm64 may refer to macOS in the future.
 // Update this when there are distinct GOOS values for macOS, iOS, and other Apple
 // operating systems on arm64.
+//
+// This optimization is disabled on OpenBSD, because its default
+// ulimit for virtual memory is a measly GB or so.
+
+// An alternative approach to this optimization would be to embed the
+// int32 values in pointers using odd values, which can be distinguished
+// from (even) *big.Int pointers. However, the Go runtime does not allow
+// user programs to manufacture pointers to arbitrary locations such as
+// within the zero page, or non-span, non-mmap, non-stack locations,
+// and it may panic if it encounters them; see Issue #382.
 
 import (
 	"log"
 	"math"
 	"math/big"
-	"runtime"
-	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 // intImpl represents a union of (int32, *big.Int) in a single pointer,
@@ -59,15 +69,7 @@ func makeBigInt(x *big.Int) Int { return Int{intImpl(x)} }
 var smallints = reserveAddresses(1 << 32)
 
 func reserveAddresses(len int) uintptr {
-	// Use syscall to avoid golang.org/x/sys/unix dependency.
-	MAP_ANON := 0x1000 // darwin (and all BSDs)
-	switch runtime.GOOS {
-	case "linux", "android":
-		MAP_ANON = 0x20
-	case "solaris":
-		MAP_ANON = 0x100
-	}
-	b, err := syscall.Mmap(-1, 0, len, syscall.PROT_READ, syscall.MAP_PRIVATE|MAP_ANON)
+	b, err := unix.Mmap(-1, 0, len, unix.PROT_READ, unix.MAP_PRIVATE|unix.MAP_ANON)
 	if err != nil {
 		log.Fatalf("mmap: %v", err)
 	}

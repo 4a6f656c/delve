@@ -57,7 +57,7 @@ github.com/spf13/cobra/doc
 github.com/spf13/pflag
 # github.com/stretchr/testify v1.7.0
 ## explicit
-# go.starlark.net v0.0.0-20200821142938-949cc6f4b097
+# go.starlark.net v0.0.0-20220328144851-d1966c6b9fcd
 ## explicit
 go.starlark.net/internal/compile
 go.starlark.net/internal/spell
