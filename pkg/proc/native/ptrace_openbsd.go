@@ -82,6 +82,7 @@ func ptraceThreadIDs(pid int) (tids []int32, err error) {
 
 // ptraceThreadTCB returns the TCB address for the given thread ID in the specified process.
 func ptraceThreadTCB(pid, tid int) (uintptr, error) {
+/*
 	var pts C.struct_ptrace_thread_state
 	ret, err := C.ptrace(C.PT_GET_THREAD_FIRST, C.int(pid), C.caddr_t(unsafe.Pointer(&pts)), C.int(unsafe.Sizeof(pts)))
 	if ret == -1 {
@@ -97,6 +98,8 @@ func ptraceThreadTCB(pid, tid int) (uintptr, error) {
 		}
 	}
 	return 0, errors.New("thread not found")
+*/
+	return 0, errors.New("unimplemented")
 }
 
 // ptraceProcessState returns the state of the given process.

@@ -53,10 +53,10 @@ func registers(thread *nativeThread) (proc.Registers, error) {
 	if err != nil {
 		return nil, err
 	}
-	thread.dbp.execPtraceFunc(func() { tcb, err = ptraceThreadTCB(thread.dbp.pid, thread.ID) })
-	if err != nil {
-		return nil, err
-	}
+	//thread.dbp.execPtraceFunc(func() { tcb, err = ptraceThreadTCB(thread.dbp.pid, thread.ID) })
+	//if err != nil {
+	//	return nil, err
+	//}
 	r := obsdutil.NewAMD64Registers(regs, tcb, func(r *obsdutil.AMD64Registers) error {
 		var fpRegSet amd64util.AMD64Xstate
 		var floatLoadError error
